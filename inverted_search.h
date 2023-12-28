@@ -45,4 +45,5 @@ Status insert(sll **head,char *);
 void print_list(sll *head);
 Status create_database(sll **head,m_table *m_table);
 Status display_database(m_table m_table[]);
+Status search_database(m_table m_table[],char *);
 #endif

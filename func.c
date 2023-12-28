@@ -255,3 +255,35 @@ Status display_database(m_table m_table[])
         return failure;
     }
 }
+
+
+Status search_database(m_table m_table[],char *word)
+{
+    int index=word[0]%97;
+    word_node *w_temp=m_table[index].link;
+    //link is null
+    if(m_table[index].link==NULL)
+    {
+        return failure;
+    }
+    //link not null
+    else
+    {
+        while(w_temp)
+        {
+           if(!strcmp(w_temp->word,word))
+           {
+              printf("Word: [%s] is present in %d files\n",word,w_temp->file_count);
+              sub_node *s_temp=w_temp->subnode_link;
+              while(s_temp)
+              {
+                  printf("%s -> %d times\n",s_temp->file_name,s_temp->word_count);
+                  s_temp=s_temp->subnode_link;
+              }
+              return success;
+           }
+           w_temp=w_temp->wordnode_link;
+        }
+        return failure;
+    }
+}

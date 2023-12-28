@@ -5,6 +5,7 @@ extern sll *head;
 int main(int argc,char **argv)
 {
     int choice;
+    char word[50];
     m_table main_table[index_size];
 
     for(int i=0;i<index_size;i++)
@@ -17,11 +18,10 @@ int main(int argc,char **argv)
     {
         printf("Validation successfull\n");
         printf("-----------------------------------------INVERTED SEARCH----------------------------------------\n");
+        printf("1-Create Database\n2-Display Database\n3-Search\n4-Update\n5-Save\n6-Exit\n");
         while(1)
         {
-            printf("1-Create Database\n2-Display Database\n3-Exit\n");
-            printf("Enter your choice: ");
-
+            printf("\nEnter your choice: ");
             scanf("%d",&choice);
             switch(choice)
             {
@@ -46,6 +46,18 @@ int main(int argc,char **argv)
                     }
                     break;
                 case 3:
+                    printf("Enter the word to be searched: ");
+                    scanf("%s",word);
+                    if(search_database(main_table,word)==success)
+                    {
+                        printf("Search database successfull\n");
+                    }
+                    else
+                    {
+                        printf("Search database failure word not found\n");
+                    }
+                    break;
+                case 6: 
                     exit(0);
                 default: printf("Invalid choice\n");
 
