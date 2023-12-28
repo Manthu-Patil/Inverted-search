@@ -22,30 +22,30 @@ Status validation(int argc,char *argv[])
                     printf("FILE %s is added\n",argv[i]);
                     if(check_file_empty(argv[i])==success)
                     {
-                        printf("Success: %s is not empty\n",argv[i]);
+                     //   printf("Success: %s is not empty\n",argv[i]);
                         if(insert(&head,argv[i])==success)
                         {
-                            printf("Success: %s is inserted to list\n",argv[i]);
+                       //     printf("Success: %s is inserted to list\n",argv[i]);
                         }
                         else
                         {
-                            printf("Error: %s is not inserted to list\n",argv[i]);
+                         //   printf("Error: %s is not inserted to list\n",argv[i]);
                         }
                     }
                     else
                     {
-                        printf("Error: %s is empty\n",argv[i]);
+                    //    printf("Error: %s is empty\n",argv[i]);
                     }
 
                 }
                 else
                 {
-                    printf("Error: %s is not a txt file\n",argv[i]);
+                   printf("Error: %s is not a txt file  and is not added\n",argv[i]);
                 }
             }
             else
             {
-                printf("Error: %s doesn't exists\n",argv[i]);
+                 printf("Error: %s doesn't exists\n",argv[i]);
             }
         }
         print_list(head);
@@ -136,13 +136,12 @@ Status create_database(sll **head,m_table *m_table)
     sll *temp=*head;
     char str[50];
     int index;
-    int break_flag=0;
+    int break_flag;
     while(temp)
     {
         FILE *f_ptr=fopen(temp->file_name,"r");
-        while(!feof(f_ptr))
+        while(fscanf(f_ptr,"%s",str)==1)
         {
-            fscanf(f_ptr,"%s",str);
             index=str[0] % 97;
             word_node *new_wnode=malloc(sizeof(word_node));
             sub_node *new_snode=malloc(sizeof(sub_node));
@@ -153,15 +152,18 @@ Status create_database(sll **head,m_table *m_table)
             //create word node
             new_wnode->file_count=1;
             strcpy(new_wnode->word,str);
-            new_wnode->subnode_link=new_snode;
+           // new_wnode->subnode_link=new_snode;
+            new_wnode->subnode_link=NULL;
             new_wnode->wordnode_link=NULL;
-
+            
+            break_flag=0;
             //Index link is Null
             if(m_table[index].link==NULL)
             {
                 m_table[index].link=new_wnode;
+                new_wnode->subnode_link=new_snode;
             }
-            /*
+         
             //Index link is not Null
             else
             {
@@ -174,32 +176,43 @@ Status create_database(sll **head,m_table *m_table)
                     //word matches
                     if(!strcmp(w_temp->word,new_wnode->word))
                     {
+                        s_temp=w_temp->subnode_link;
                         while(s_temp)
                         {
 
                             //word and file matches
                             if(!strcmp(s_temp->file_name,new_snode->file_name))
                             {
+                                //increment word count
                                 (s_temp->word_count)++;
-                                //break_flag=1;
-                                // break;
+                                break_flag=1;
+                                break;
                             }
 
                             //word matches file doesn't
                             prev_stemp=s_temp;
                             s_temp=s_temp->subnode_link;
                         }
+                        if(s_temp==NULL)
+                        {
+                        //attach subnode and increment file count
                         prev_stemp->subnode_link=new_snode;
-                        //(w_temp->file_count)++;
+                        (w_temp->file_count)++;
+                        break;
+                        }
 
                     }
                     //word doesnt match traverse
                     prev_wtemp=w_temp;
                     w_temp=w_temp->wordnode_link;
                 }
-                prev_wtemp->wordnode_link=new_wnode;               
+                if(w_temp==NULL && break_flag!=1)
+                {
+                prev_wtemp->wordnode_link=new_wnode;
+                new_wnode->subnode_link=new_snode;
+                }               
             }
-            */
+            
 
 
         }
@@ -218,12 +231,13 @@ Status display_database(m_table m_table[])
             if(m_table[i].link!=NULL)
             {
                 word_node *w_temp=m_table[i].link;
-                sub_node *s_temp=w_temp->subnode_link;
-                while(w_temp!=NULL)
+                
+                while(w_temp)
                 {
                     printf("Word: [%s] ",w_temp->word);
                     printf("Filecount: %d ",w_temp->file_count);
-                    while(s_temp!=NULL)
+                    sub_node *s_temp=w_temp->subnode_link;
+                    while(s_temp)
                     {
                         printf("Wordcount: %d ",s_temp->word_count);
                         printf("Files: %s \n",s_temp->file_name);
